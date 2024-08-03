@@ -124,17 +124,14 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         len: {
-          args: [7, 30],
-          msg: "Password must have between 7 and 30 characters"
+          args: [7, 80],
+          msg: "Password must have between 7 and 80 characters"
         },
         notEmpty: { 
           msg: "Password is required" 
         },
-        notNull: {
-          msg: "Password is required"
-        }
       }
-    }
+    }    
   }, {
     sequelize,
     modelName: 'User',

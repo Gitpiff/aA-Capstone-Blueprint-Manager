@@ -47,6 +47,27 @@ router.delete('/', (_req, res) => {
     return res.json({ message: 'You are now logged out'})
 })
 
+
+// Get Session User
+router.get('/', (req, res) => {
+    const { user } = req;
+
+    if(user) {
+        const safeUser = {
+            id: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            username: user.username,
+            companyName: user.companyName,
+            industrySector: user.industrySector,
+            email: user.email
+        };
+        return res.json({
+            user: safeUser
+        });
+    } else return res.json({ user: null });
+});
+
 module.exports = router;
 
 
