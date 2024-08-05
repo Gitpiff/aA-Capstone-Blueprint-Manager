@@ -1,23 +1,32 @@
 'use strict';
-const { Model } = require('sequelize');
-
+const {
+  Model
+} = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Project extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
     static associate(models) {
-      // Define association here
+      // define association here
       Project.hasMany(models.ProjectImage, {
         foreignKey: 'projectId',
         as: 'images'
-      });
+      })
 
-      // Project.hasMany(models.Employee, {
-      //   foreignKey: 'projectId',
-      //   as: 'employees'
-      // });
+      Project.hasMany(models.Employee, {
+        foreignKey: 'projectId',
+        as: 'employees'
+      })
     }
   }
-
   Project.init({
+    ownerId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -87,25 +96,21 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         notNull: { msg: "Start Date is required" },
-        isAfterNow(value) {
-          if (new Date(value) <= new Date()) {
-            throw new Error("Start Date cannot be in the past");
+        isInPast(value) {
+          if(new Date (value) <= this.createdAt) {
+            throw new Error("Start Date cannot be in the past")
           }
         }
       }
-    },
-    projectManagerId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
     },
     completionDate: {
       type: DataTypes.DATE,
       allowNull: false,
       validate: {
-        notNull: { msg: "Completion Date is required" },
-        isAfterStartDate(value) {
-          if (new Date(value) <= new Date(this.startDate)) {
-            throw new Error("Completion Date cannot be on or before Start Date");
+        notNull: { msg: "Completion Date cannot be on or before Start Date" },
+        isAfter(value) {
+          if(new Date (value) <= this.commencementDate) {
+            throw new Error("Completion Date cannot be on or before Start Date")
           }
         },
       }
@@ -114,6 +119,5 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Project',
   });
-
   return Project;
 };

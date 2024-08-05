@@ -11,10 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      // Employee.belongsTo(models.User, {
-      //   foreignKey: 'userId',
-      //   as: 'project'
-      // })
+      Employee.belongsTo(models.User, {
+        foreignKey: 'userId',
+        as: 'project'
+      })
     }
   }
   Employee.init({
@@ -50,32 +50,16 @@ module.exports = (sequelize, DataTypes) => {
         }
       }
     },
-    jobTitle: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        len: {
-          args: [2, 30],
-          msg: "Job Title must have between 2 and 30 characters"
-        },
-        notEmpty: { 
-          msg: "Job Title is required" 
-        },
-        notNull: {
-          msg: "Job Title is required"
-        }
-      }
-    },
     hireDate: {
       type: DataTypes.DATE,
       allowNull: false,
       validate: {
-        notNull: { msg: "Hire Date is required" },
-        isBefore(value) {
-          if (new Date(value) > new Date()) {
-            throw new Error("Hire Date cannot be in the future");
+        notNull: { msg: "Hire Date cannot be on a future date" },
+        isAfter(value) {
+          if(new Date (value) <= this.commencementDate) {
+            throw new Error("Completion Date cannot be on or before Start Date")
           }
-        }
+        },
       }
     },
     contactNumber: {
@@ -117,14 +101,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    // projectId: {
-    //   type: DataTypes.INTEGER,
-    //   allowNull: false,
-    //   references: {
-    //     model: 'Projects',
-    //     key: 'id'
-    //   }
-    // },
+    projectId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'Projects',
+        key: 'id'
+      }
+    },
   }, {
     sequelize,
     modelName: 'Employee',
